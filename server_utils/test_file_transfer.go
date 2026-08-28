@@ -35,6 +35,7 @@ import (
 	"github.com/pelicanplatform/pelican/config"
 	"github.com/pelicanplatform/pelican/param"
 	"github.com/pelicanplatform/pelican/token"
+	log "github.com/sirupsen/logrus"
 )
 
 type (
@@ -163,10 +164,12 @@ func (t TestFileTransferImpl) uploadTestfile(ctx context.Context, baseUrl string
 	uploadURL = uploadURL.JoinPath(path.Join(t.testFilePath, t.testType.String()+"-"+time.Now().Format(time.RFC3339)+".txt"))
 
 	// First try with the federation issuer token
-	resp, _, err := doRequestWithToken(ctx, uploadURL.String(), tkn, http.MethodPut, t.testBody)
+	httpMethod := http.MethodPut
+	resp, _, err := doRequestWithToken(ctx, uploadURL.String(), tkn, httpMethod, t.testBody)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to upload test file")
 	}
+	log.Debugln("Upload a test file via HTTP request", httpMethod, "done with URL", uploadURL.String())
 
 	if resp.StatusCode > 299 {
 		// If the response is not successful, try with the external web url token
@@ -174,10 +177,11 @@ func (t TestFileTransferImpl) uploadTestfile(ctx context.Context, baseUrl string
 		if err != nil {
 			return "", errors.Wrap(err, "failed to create a token for test file transfer upload")
 		}
-		resp, _, err = doRequestWithToken(ctx, uploadURL.String(), tkn, http.MethodPut, t.testBody)
+		resp, _, err = doRequestWithToken(ctx, uploadURL.String(), tkn, httpMethod, t.testBody)
 		if err != nil {
 			return "", errors.Wrap(err, "failed to upload test file")
 		}
+		log.Debugln("Upload a test file via HTTP request", httpMethod, "done with URL", uploadURL.String())
 		if resp.StatusCode > 299 {
 			return "", errors.Errorf("error response %v from test file upload: %v", resp.StatusCode, resp.Status)
 		}
@@ -194,10 +198,12 @@ func (t TestFileTransferImpl) downloadTestfile(ctx context.Context, downloadUrl 
 		return errors.Wrap(err, "failed to create a token for test file transfer download")
 	}
 
-	resp, responseBody, err := doRequestWithToken(ctx, downloadUrl, tkn, http.MethodGet, "")
+	httpMethod := http.MethodGet
+	resp, responseBody, err := doRequestWithToken(ctx, downloadUrl, tkn, httpMethod, "")
 	if err != nil {
 		return errors.Wrap(err, "failed to download test file")
 	}
+	log.Debugln("Download a test file via HTTP request", httpMethod, "done with URL", downloadUrl)
 
 	// We first check the response code to see if the request was successful
 	// If it wasn't we retry with the external web url token
@@ -212,6 +218,7 @@ func (t TestFileTransferImpl) downloadTestfile(ctx context.Context, downloadUrl 
 		if err != nil {
 			return errors.Wrap(err, "failed to download test file")
 		}
+		log.Debugln("Download a test file via HTTP request", httpMethod, "done with URL", downloadUrl)
 		if resp.StatusCode > 299 {
 			return errors.Errorf("error response %v from test file transfer download: %v", resp.StatusCode, resp.Status)
 		}
@@ -231,10 +238,12 @@ func (t TestFileTransferImpl) deleteTestfile(ctx context.Context, fileUrl string
 		return errors.Wrap(err, "failed to create a token for the test file transfer deletion")
 	}
 
-	resp, _, err := doRequestWithToken(ctx, fileUrl, tkn, http.MethodDelete, "")
+	httpMethod := http.MethodDelete
+	resp, _, err := doRequestWithToken(ctx, fileUrl, tkn, httpMethod, "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create DELETE request for test file transfer deletion")
 	}
+	log.Debugln("Delete a test file via HTTP request", httpMethod, "done with URL", fileUrl)
 
 	if resp.StatusCode > 299 {
 		// If the response is not successful, try with the external web url token
@@ -242,10 +251,11 @@ func (t TestFileTransferImpl) deleteTestfile(ctx context.Context, fileUrl string
 		if err != nil {
 			return errors.Wrap(err, "failed to create a token for test file transfer deletion")
 		}
-		resp, _, err = doRequestWithToken(ctx, fileUrl, tkn, http.MethodDelete, "")
+		resp, _, err = doRequestWithToken(ctx, fileUrl, tkn, httpMethod, "")
 		if err != nil {
 			return errors.Wrap(err, "failed to delete test file")
 		}
+		log.Debugln("Delete a test file via HTTP request", httpMethod, "done with URL", fileUrl)
 		if resp.StatusCode > 299 {
 			return errors.Errorf("error response %v from test file transfer deletion: %v", resp.StatusCode, resp.Status)
 		}
