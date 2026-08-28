@@ -1,0 +1,14 @@
+TLSSkipVerify: true
+Logging:
+  Level: Debug
+
+Server:
+  Hostname: pelican-dev
+  WebPort: 8446
+  DbLocation: /srv/pfed/config/director.sqlite
+
+Director:
+  OriginCacheHealthTestInterval: 20s
+
+Federation:
+  RegistryUrl: https://pelican-dev:8447

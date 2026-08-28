@@ -1,0 +1,16 @@
+TLSSkipVerify: true
+Logging:
+  Level: Debug
+
+Server:
+  Hostname: pelican-dev
+  DbLocation: /srv/pfed/config/cache.sqlite
+  WebPort: 8445
+
+Federation:
+  DirectorUrl: https://pelican-dev:8446
+  RegistryUrl: https://pelican-dev:8447
+
+Cache:
+  Port: 8442
+  StorageLocation: /srv/pfed/cache

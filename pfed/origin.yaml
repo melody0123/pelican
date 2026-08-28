@@ -1,0 +1,20 @@
+TLSSkipVerify: true
+Logging:
+  Level: Debug
+
+Server:
+  Hostname: pelican-dev
+  WebPort: 8444
+  DbLocation: /srv/pfed/config/origin.sqlite
+
+Federation:
+  DirectorUrl: https://pelican-dev:8446
+  RegistryUrl: https://pelican-dev:8447
+
+Origin:
+  Port: 8443
+  StorageType: posix
+  Exports:
+    - StoragePrefix: /srv/pfed/export
+      FederationPrefix: /test
+      Capabilities: ["PublicReads", "Listings", "DirectReads"]
