@@ -1,9 +1,9 @@
 #!/bin/bash
 
-set -eux
+set -ex
 
 ORIGIN=0
-while "$1"; do
+while [ -n "$1" ]; do
 	case "$1" in
 		origin)
 		  nohup pelican-server origin serve --config /etc/pelican/origin.yaml > origin.log &
