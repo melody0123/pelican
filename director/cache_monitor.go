@@ -73,6 +73,7 @@ func runCacheTest(ctx context.Context, cacheUrl url.URL) (testFilePath string, e
 	if reqErr != nil {
 		return "", errors.Wrap(reqErr, "failed to send request to cache for the test file")
 	}
+	log.Debugln("Test cache via HTTP", req.Method, "method", "at URL", req.URL)
 	byteBody, reqErr := io.ReadAll(res.Body)
 	if reqErr != nil {
 		return "", errors.Wrap(reqErr, "failed to read response body. Response status code is "+res.Status)
